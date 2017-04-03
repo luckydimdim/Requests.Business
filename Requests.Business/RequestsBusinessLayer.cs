@@ -21,6 +21,12 @@ namespace Cmas.BusinessLayers.Requests
             _queryBuilder = queryBuilder;
         }
 
+        /// <summary>
+        /// Создать заявку
+        /// </summary>
+        /// <param name="contractId">ID договора</param>
+        /// <param name="callOffOrderIds">ID работ (наряд заказов)</param>
+        /// <returns>ID созданной заявки</returns>
         public async Task<string> CreateRequest(string contractId, IList<string> callOffOrderIds)
         {
             var request = new Request();
@@ -29,7 +35,7 @@ namespace Cmas.BusinessLayers.Requests
             request.ContractId = contractId;
             request.CreatedAt = DateTime.Now;
             request.UpdatedAt = DateTime.Now;
-            request.RequestStatus = RequestStatus.NotPublished;
+            request.Status = RequestStatus.NotPublished;
 
             var context = new CreateRequestCommandContext
             {
@@ -41,16 +47,35 @@ namespace Cmas.BusinessLayers.Requests
             return context.Id;
         }
 
+        /// <summary>
+        /// Получить заявку по ее ID
+        /// </summary>
         public async Task<Request> GetRequest(string requestId)
         {
             return await _queryBuilder.For<Task<Request>>().With(new FindById(requestId));
         }
 
-        public async Task<Request> GetRequestByContractId(string contractId)
+        /// <summary>
+        /// Получить все заявки
+        /// </summary>
+        public async Task<IEnumerable<Request>> GetRequests()
         {
-            return await _queryBuilder.For<Task<Request>>().With(new FindByContractId(contractId));
+            return await _queryBuilder.For<Task<IEnumerable<Request>>>().With(new AllEntities());
         }
 
+        /// <summary>
+        /// Получить заявки по договору
+        /// </summary>
+        /// <param name="contractId">ID договора</param
+        public async Task<IEnumerable<Request>> GetRequestsByContractId(string contractId)
+        {
+            return await _queryBuilder.For<Task<IEnumerable<Request>>>().With(new FindByContractId(contractId));
+        }
+
+        /// <summary>
+        /// Удалить заявку
+        /// </summary>
+        /// <param name="requestId">ID заявки</param>
         public async Task<string> DeleteRequest(string requestId)
         {
             var context = new DeleteRequestCommandContext

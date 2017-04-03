@@ -38,12 +38,15 @@ namespace Cmas.BusinessLayers.Requests.Entities
         /// </summary>
         public IList<string> CallOffOrderIds;
 
-        public RequestStatus RequestStatus;
+        /// <summary>
+        /// Статус заявки
+        /// </summary>
+        public RequestStatus Status;
 
         public Request()
         {
             CallOffOrderIds = new List<string>();
-            RequestStatus = RequestStatus.NotPublished;
+            Status = RequestStatus.NotPublished;
         }
 
     }
