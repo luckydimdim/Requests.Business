@@ -1,18 +1,34 @@
 ﻿namespace Cmas.BusinessLayers.Requests.Entities
 {
     /// <summary>
-    /// Статус заявки
+    /// Статус заявки на проверку
     /// </summary>
     public enum RequestStatus
     {
         /// <summary>
-        /// Не опубликовано
+        ///  Нет никакого статуса
         /// </summary>
-        NotPublished = 0,
+        None = 0,
 
         /// <summary>
-        /// Опубликовано
+        ///  В процессе составления
         /// </summary>
-        Published = 1
+        Creation = 1,
+
+        /// <summary>
+        /// На проверке
+        /// </summary>
+        Validation = 2,
+
+        /// <summary>
+        /// На исправлении
+        /// </summary>
+        Correction = 3,
+
+        /// <summary>
+        /// Проверена, согласована
+        /// </summary>
+        Done = 4,
+
     }
 }

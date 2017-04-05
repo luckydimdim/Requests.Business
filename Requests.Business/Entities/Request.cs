@@ -46,7 +46,7 @@ namespace Cmas.BusinessLayers.Requests.Entities
         public Request()
         {
             CallOffOrderIds = new List<string>();
-            Status = RequestStatus.NotPublished;
+            Status = RequestStatus.None;
         }
 
     }

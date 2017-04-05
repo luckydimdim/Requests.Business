@@ -35,7 +35,7 @@ namespace Cmas.BusinessLayers.Requests
             request.ContractId = contractId;
             request.CreatedAt = DateTime.Now;
             request.UpdatedAt = DateTime.Now;
-            request.Status = RequestStatus.NotPublished;
+            request.Status = RequestStatus.Creation;
 
             var context = new CreateRequestCommandContext
             {
