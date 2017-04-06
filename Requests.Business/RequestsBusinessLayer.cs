@@ -33,8 +33,8 @@ namespace Cmas.BusinessLayers.Requests
 
             request.CallOffOrderIds = callOffOrderIds;
             request.ContractId = contractId;
-            request.CreatedAt = DateTime.Now;
-            request.UpdatedAt = DateTime.Now;
+            request.CreatedAt = DateTime.UtcNow;
+            request.UpdatedAt = DateTime.UtcNow;
             request.Status = RequestStatus.Creation;
 
             var context = new CreateRequestCommandContext
@@ -90,7 +90,7 @@ namespace Cmas.BusinessLayers.Requests
 
         public async Task<string> UpdateRequest(Request request)
         {
-            request.UpdatedAt = DateTime.Now;
+            request.UpdatedAt = DateTime.UtcNow;
              
             var context = new UpdateRequestCommandContext
             {
