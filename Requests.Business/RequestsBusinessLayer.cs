@@ -32,6 +32,7 @@ namespace Cmas.BusinessLayers.Requests
             var request = new Request();
 
             request.CallOffOrderIds = callOffOrderIds;
+            request.Id = null;
             request.ContractId = contractId;
             request.CreatedAt = DateTime.UtcNow;
             request.UpdatedAt = DateTime.UtcNow;
