@@ -7,6 +7,9 @@ using Cmas.Infrastructure.Domain.Queries;
 using Cmas.BusinessLayers.Requests.Entities;
 using Cmas.BusinessLayers.Requests.Criteria;
 using System.Collections.Generic;
+using System.Security.Claims;
+using Cmas.Infrastructure.Security;
+using Cmas.Infrastructure.ErrorHandler;
 
 namespace Cmas.BusinessLayers.Requests
 {
@@ -14,11 +17,13 @@ namespace Cmas.BusinessLayers.Requests
     {
         private readonly ICommandBuilder _commandBuilder;
         private readonly IQueryBuilder _queryBuilder;
+        private readonly ClaimsPrincipal _claimsPrincipal;
 
-        public RequestsBusinessLayer(ICommandBuilder commandBuilder, IQueryBuilder queryBuilder)
+        public RequestsBusinessLayer(IServiceProvider serviceProvider, ClaimsPrincipal claimsPrincipal)
         {
-            _commandBuilder = commandBuilder;
-            _queryBuilder = queryBuilder;
+            _claimsPrincipal = claimsPrincipal;
+            _commandBuilder = (ICommandBuilder)serviceProvider.GetService(typeof(ICommandBuilder));
+            _queryBuilder = (IQueryBuilder)serviceProvider.GetService(typeof(IQueryBuilder));
         }
 
         /// <summary>
@@ -36,8 +41,9 @@ namespace Cmas.BusinessLayers.Requests
             request.ContractId = contractId;
             request.CreatedAt = DateTime.UtcNow;
             request.UpdatedAt = DateTime.UtcNow;
-            request.Status = RequestStatus.Creation;
 
+            request.Status = RequestStatus.Empty;
+             
             var context = new CreateRequestCommandContext
             {
                Request = request
@@ -101,6 +107,81 @@ namespace Cmas.BusinessLayers.Requests
             context = await _commandBuilder.Execute(context);
 
             return context.Request.Id;
+        }
+
+        public async Task UpdateRequestStatusAsync(Request request, RequestStatus status)
+        {
+            if (status == RequestStatus.None)
+                throw new ArgumentException("status");
+
+            if (status == request.Status)
+                return;
+
+            switch (status)
+            {
+                case RequestStatus.Empty:
+                    throw new GeneralServiceErrorException(
+                        string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                case RequestStatus.Creating:
+                    if (request.Status != RequestStatus.Empty && request.Status != RequestStatus.Created)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                        request.Status = status;
+                    break;
+                case RequestStatus.Created:
+                    if (request.Status != RequestStatus.Creating)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                        request.Status = status;
+                    break;
+                case RequestStatus.Approving:
+                    if (request.Status != RequestStatus.Corrected && request.Status != RequestStatus.Created)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                        request.Status = status;
+                    break;
+                case RequestStatus.Correcting:
+                    if (request.Status != RequestStatus.Approving && request.Status != RequestStatus.Corrected)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                    {
+                        if (request.Status == RequestStatus.Approving && !_claimsPrincipal.HasRoles(new[] { Role.Customer }))
+                            throw new ForbiddenErrorException();
+
+                        request.Status = status;
+                    }
+                    break;
+                case RequestStatus.Corrected:
+                    if (request.Status != RequestStatus.Correcting)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                    {
+                        request.Status = status;
+                    }
+                    break;
+                case RequestStatus.Approved:
+                    if (request.Status != RequestStatus.Approving)
+                        throw new GeneralServiceErrorException(
+                            string.Format("cannot set '{0}' status from {1}", status, request.Status));
+                    else
+                    {
+                        if (!_claimsPrincipal.HasRoles(new[] { Role.Customer }))
+                            throw new ForbiddenErrorException();
+
+                        request.Status = status;
+                    }
+                    break;
+
+                default:
+                    throw new GeneralServiceErrorException("unknown status");
+            }
+
+            await UpdateRequest(request);
         }
 
     }

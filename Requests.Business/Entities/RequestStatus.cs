@@ -11,24 +11,39 @@
         None = 0,
 
         /// <summary>
-        ///  В процессе составления
+        ///  Пустая заявка
         /// </summary>
-        Creation = 1,
+        Empty = 1,
+
+        /// <summary>
+        ///  В процессе составления (было редактирование)
+        /// </summary>
+        Creating = 2,
+
+        /// <summary>
+        ///  Редактирование завершено
+        /// </summary>
+        Created = 3,
 
         /// <summary>
         /// На проверке
         /// </summary>
-        Validation = 2,
+        Approving = 4,
 
         /// <summary>
         /// На исправлении
         /// </summary>
-        Correction = 3,
+        Correcting = 5,
+
+        /// <summary>
+        /// Исправленно
+        /// </summary>
+        Corrected = 6,
 
         /// <summary>
         /// Проверена, согласована
         /// </summary>
-        Done = 4,
+        Approved = 7,
 
     }
 }
