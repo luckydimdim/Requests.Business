@@ -130,7 +130,7 @@ namespace Cmas.BusinessLayers.Requests
                         request.Status = status;
                     break;
                 case RequestStatus.Created:
-                    if (request.Status != RequestStatus.Creating)
+                    if (request.Status != RequestStatus.Creating && request.Status != RequestStatus.Empty)
                         throw new GeneralServiceErrorException(
                             string.Format("cannot set '{0}' status from {1}", status, request.Status));
                     else
