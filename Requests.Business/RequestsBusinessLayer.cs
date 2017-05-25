@@ -36,8 +36,16 @@ namespace Cmas.BusinessLayers.Requests
         {
             var request = new Request();
 
+            var counter = await _queryBuilder.For<Task<string>>().With(new GetCounter());
+
+            if (counter == null)
+            {
+                throw new Exception("error while getting counter");
+            }
+
             request.CallOffOrderIds = callOffOrderIds;
             request.Id = null;
+            request.Counter = counter;
             request.ContractId = contractId;
             request.CreatedAt = DateTime.UtcNow;
             request.UpdatedAt = DateTime.UtcNow;
