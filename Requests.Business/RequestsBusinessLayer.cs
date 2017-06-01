@@ -157,7 +157,7 @@ namespace Cmas.BusinessLayers.Requests
                             string.Format("cannot set '{0}' status from {1}", status, request.Status));
                     else
                     {
-                        if (request.Status == RequestStatus.Approving && !_claimsPrincipal.HasRoles(new[] { Role.Customer }))
+                        if (request.Status == RequestStatus.Approving && !_claimsPrincipal.HasAnyRole(new[] { Role.Customer }))
                             throw new ForbiddenErrorException();
 
                         request.Status = status;
@@ -178,7 +178,7 @@ namespace Cmas.BusinessLayers.Requests
                             string.Format("cannot set '{0}' status from {1}", status, request.Status));
                     else
                     {
-                        if (!_claimsPrincipal.HasRoles(new[] { Role.Customer }))
+                        if (!_claimsPrincipal.HasAnyRole(new[] { Role.Customer }))
                             throw new ForbiddenErrorException();
 
                         request.Status = status;
