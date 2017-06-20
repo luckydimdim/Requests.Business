@@ -71,6 +71,14 @@ namespace Cmas.BusinessLayers.Requests
         }
 
         /// <summary>
+        /// Получить заявки по наряд заказу
+        /// </summary>
+        public async Task<IEnumerable<Request>> GetRequestByCallOffOrderId(string callOffOrderId)
+        {
+            return await _queryBuilder.For<Task<IEnumerable<Request>>>().With(new FindByCallOffOrderId(callOffOrderId));
+        }
+
+        /// <summary>
         /// Получить все заявки
         /// </summary>
         public async Task<IEnumerable<Request>> GetRequests()
